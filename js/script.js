@@ -1,17 +1,42 @@
 "use strict";
-let numberOfFilms = prompt("Сколько фильмов вы посмотрели?");
-let numberOfMovies = prompt("Последний фильм который вы смотрели?");
-let numberOfBalls = prompt("На сколько оцените?");
+
+let answersArray = ["Сколько фильмов вы посмотрели?",
+                    "Последний фильм который вы смотрели?",
+                    "На сколько оцените?"];
+let responseArr = [];
+let num = 0;
+//я не мог нормально эту хуйню написать
+while (answersArray.length > num) {
+    if(prompt(answersArray[num]) !== ""){
+        responseArr[num] = prompt(answersArray[num]);
+        num++;
+    }
+}
+
 
 let personalMovieDB = {
-    count: numberOfFilms,
+    count: parseInt(responseArr[0]),
     movies: {
-        numberOfMovies,
-        numberOfBalls
+        numberOfMovies: responseArr[1],
+        numberOfBalls: responseArr[2]
     },
     actors: {},
     genres: [],
     privat: false
 };
+
+
+if(personalMovieDB.count < 10){
+    console.log("Просмотрено довольно мало фильмов");
+} 
+else if(personalMovieDB.count >= 10 && personalMovieDB.count < 30){
+    console.log("Вы классический зритель");
+} 
+else if(personalMovieDB.count >= 30){
+    console.log("Вы киноман");
+} 
+else {
+    console.log("Произошла ошибка");
+}
 
 console.log(personalMovieDB);
