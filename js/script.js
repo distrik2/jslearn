@@ -1,3 +1,4 @@
+"use strict";
 let numberOfFilms = prompt("Сколько фильмов вы посмотрели?");
 let numberOfMovies = prompt("Последний фильм который вы смотрели?");
 let numberOfBalls = prompt("На сколько оцените?");
@@ -13,4 +14,4 @@ let personalMovieDB = {
     privat: false
 };
 
-console.log(personalMovieDB.movies);
+console.log(personalMovieDB);
