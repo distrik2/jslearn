@@ -1,42 +1,43 @@
 "use strict";
 
-let answersArray = ["Сколько фильмов вы посмотрели?",
-                    "Последний фильм который вы смотрели?",
-                    "На сколько оцените?"];
 let responseArr = [];
-let num = 0;
-//я не мог нормально эту хуйню написать
-while (answersArray.length > num) {
-    if(prompt(answersArray[num]) !== ""){
-        responseArr[num] = prompt(answersArray[num]);
-        num++;
+
+function ShowQustionForUser(){
+    responseArr[0] = +prompt("Сколько фильмов вы посмотрели?", "1");
+    while (responseArr[0] == "" || responseArr[0] == null || isNaN(responseArr[0])) {
+        responseArr[0] = +prompt("Сколько фильмов вы посмотрели?", "1");
+    }
+    responseArr[1] = prompt("Последний фильм который вы смотрели?", "Зомби в корее");
+    while (responseArr[1] == "" || responseArr[1] == null) {
+        responseArr[1] = prompt("Последний фильм который вы смотрели?", "Зомби в корее");
+    }
+    responseArr[2] = +prompt("На сколько оцените?", "6");
+    while (responseArr[2] == "" || responseArr[2] == null || isNaN(responseArr[0])) { 
+        responseArr[2] = +prompt("На сколько оцените?", "6");
     }
 }
 
+ShowQustionForUser();
 
-let personalMovieDB = {
-    count: parseInt(responseArr[0]),
-    movies: {
-        numberOfMovies: responseArr[1],
-        numberOfBalls: responseArr[2]
-    },
-    actors: {},
-    genres: [],
-    privat: false
-};
-
-
-if(personalMovieDB.count < 10){
-    console.log("Просмотрено довольно мало фильмов");
-} 
-else if(personalMovieDB.count >= 10 && personalMovieDB.count < 30){
-    console.log("Вы классический зритель");
-} 
-else if(personalMovieDB.count >= 30){
-    console.log("Вы киноман");
-} 
-else {
-    console.log("Произошла ошибка");
+let genresArr = [];
+function writeYourGenres() {
+    for (let i = 0; i < 3; i++){
+        genresArr[i] = prompt(`Ваш любимый жанр под номером ${i+1}`, "nigga");
+    }
+}
+writeYourGenres();
+function showMyDB(arrayGenres) {
+    let personalMovieDB = {
+        count: parseInt(responseArr[0]),
+        movies: {
+            numberOfMovies: responseArr[1],
+            numberOfBalls: responseArr[2]
+        },
+        actors: {},
+        genres: [] = arrayGenres,
+        privat: false
+    };
+    personalMovieDB.privat == true ? console.log("У пользователя приватный аккаунт") : console.log(personalMovieDB);
 }
 
-console.log(personalMovieDB);
+showMyDB(genresArr);
