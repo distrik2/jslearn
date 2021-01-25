@@ -1,43 +1,58 @@
 "use strict";
 
-let responseArr = [];
+let personalMovieDB = {
+    count: 0,
+    movies: [],
+    actors: {},
+    genres: [],
+    privat: false,
 
-function ShowQustionForUser(){
-    responseArr[0] = +prompt("Сколько фильмов вы посмотрели?", "1");
-    while (responseArr[0] == "" || responseArr[0] == null || isNaN(responseArr[0])) {
-        responseArr[0] = +prompt("Сколько фильмов вы посмотрели?", "1");
-    }
-    responseArr[1] = prompt("Последний фильм который вы смотрели?", "Зомби в корее");
-    while (responseArr[1] == "" || responseArr[1] == null) {
-        responseArr[1] = prompt("Последний фильм который вы смотрели?", "Зомби в корее");
-    }
-    responseArr[2] = +prompt("На сколько оцените?", "6");
-    while (responseArr[2] == "" || responseArr[2] == null || isNaN(responseArr[0])) { 
-        responseArr[2] = +prompt("На сколько оцените?", "6");
-    }
-}
+    ShowQustionForUser: function () {
+        personalMovieDB.count = +prompt("Сколько фильмов вы посмотрели?", "1");
+        while (personalMovieDB.count == "" || personalMovieDB.count == null || isNaN(personalMovieDB.count)) {
+            personalMovieDB.count = +prompt("Сколько фильмов вы посмотрели?", "1");
+        }
 
-ShowQustionForUser();
+        personalMovieDB.movies[0] = prompt("Последний фильм который вы смотрели?", "Зомби в корее");
+        while (personalMovieDB.movies[0] == "" || personalMovieDB.movies[0] == null || personalMovieDB.movies[0].length > 50) {
+            personalMovieDB.movies[0] = prompt("Последний фильм который вы смотрели?", "Зомби в корее");
+        }
 
-let genresArr = [];
-function writeYourGenres() {
-    for (let i = 0; i < 3; i++){
-        genresArr[i] = prompt(`Ваш любимый жанр под номером ${i+1}`, "nigga");
-    }
-}
-writeYourGenres();
-function showMyDB(arrayGenres) {
-    let personalMovieDB = {
-        count: parseInt(responseArr[0]),
-        movies: {
-            numberOfMovies: responseArr[1],
-            numberOfBalls: responseArr[2]
-        },
-        actors: {},
-        genres: [] = arrayGenres,
-        privat: false
-    };
-    personalMovieDB.privat == true ? console.log("У пользователя приватный аккаунт") : console.log(personalMovieDB);
-}
+        personalMovieDB.movies[1] = +prompt("На сколько оцените?", "6");
+        while (personalMovieDB.movies[1] == "" || personalMovieDB.movies[1] == null || isNaN(personalMovieDB.movies[1])) {
+            personalMovieDB.movies[1] = +prompt("На сколько оцените?", "6");
+        }
+    },
 
-showMyDB(genresArr);
+    writeYourGenres: function () {
+        // for (let i = 0; i < 3; i++) {
+        //     personalMovieDB.genres[i] = prompt(`Ваш любимый жанр под номером ${i + 1}`);
+        //     if (personalMovieDB.genres[i] == "" || personalMovieDB.genres[i] == null || personalMovieDB.genres[i] == " "){
+        //         i--;
+        //     }
+        // }
+
+        let gen = prompt(`Введите ваши любимые жанры без запятых.`);
+        personalMovieDB.genres = gen.split(" ");
+
+        personalMovieDB.genres.forEach(function (item, i, genres) {
+            console.log(`Любимый жанр #${i + 1} - это ${item}`);
+        });
+
+    },
+
+    showMyDB: function(){
+        personalMovieDB.privat == true ? console.log("У пользователя приватный аккаунт") : console.log(personalMovieDB);
+    },
+
+    toggleVisibleMyDB: function(){
+        if (!personalMovieDB.privat) {personalMovieDB.privat = true;}
+        else {personalMovieDB.privat = false;}
+    },
+};
+
+personalMovieDB.ShowQustionForUser();
+personalMovieDB.writeYourGenres();
+personalMovieDB.toggleVisibleMyDB();
+personalMovieDB.showMyDB();
+// console.log(personalMovieDB);
