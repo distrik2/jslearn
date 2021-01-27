@@ -1,58 +1,34 @@
 "use strict";
 
-let personalMovieDB = {
-    count: 0,
-    movies: [],
-    actors: {},
-    genres: [],
-    privat: false,
-
-    ShowQustionForUser: function () {
-        personalMovieDB.count = +prompt("Сколько фильмов вы посмотрели?", "1");
-        while (personalMovieDB.count == "" || personalMovieDB.count == null || isNaN(personalMovieDB.count)) {
-            personalMovieDB.count = +prompt("Сколько фильмов вы посмотрели?", "1");
-        }
-
-        personalMovieDB.movies[0] = prompt("Последний фильм который вы смотрели?", "Зомби в корее");
-        while (personalMovieDB.movies[0] == "" || personalMovieDB.movies[0] == null || personalMovieDB.movies[0].length > 50) {
-            personalMovieDB.movies[0] = prompt("Последний фильм который вы смотрели?", "Зомби в корее");
-        }
-
-        personalMovieDB.movies[1] = +prompt("На сколько оцените?", "6");
-        while (personalMovieDB.movies[1] == "" || personalMovieDB.movies[1] == null || isNaN(personalMovieDB.movies[1])) {
-            personalMovieDB.movies[1] = +prompt("На сколько оцените?", "6");
-        }
-    },
-
-    writeYourGenres: function () {
-        // for (let i = 0; i < 3; i++) {
-        //     personalMovieDB.genres[i] = prompt(`Ваш любимый жанр под номером ${i + 1}`);
-        //     if (personalMovieDB.genres[i] == "" || personalMovieDB.genres[i] == null || personalMovieDB.genres[i] == " "){
-        //         i--;
-        //     }
-        // }
-
-        let gen = prompt(`Введите ваши любимые жанры без запятых.`);
-        personalMovieDB.genres = gen.split(" ");
-
-        personalMovieDB.genres.forEach(function (item, i, genres) {
-            console.log(`Любимый жанр #${i + 1} - это ${item}`);
-        });
-
-    },
-
-    showMyDB: function(){
-        personalMovieDB.privat == true ? console.log("У пользователя приватный аккаунт") : console.log(personalMovieDB);
-    },
-
-    toggleVisibleMyDB: function(){
-        if (!personalMovieDB.privat) {personalMovieDB.privat = true;}
-        else {personalMovieDB.privat = false;}
-    },
+const movieDB = {
+    movies: [
+        "Логан1WADWAWDA",
+        "Лига справедливости",
+        "Ла-ла лэнд",
+        "Одержимость",
+        "Скотт Пилигрим против..."
+    ]
 };
 
-personalMovieDB.ShowQustionForUser();
-personalMovieDB.writeYourGenres();
-personalMovieDB.toggleVisibleMyDB();
-personalMovieDB.showMyDB();
-// console.log(personalMovieDB);
+
+const promo = document.querySelector(".promo"),
+    promoAdv = promo.querySelectorAll(".promo__adv img"),
+    // promoAdv = promo.querySelector(".promo__adv"),
+    promoGenre = promo.querySelector(".promo__genre"),
+    promoBg = promo.querySelector(".promo__bg"),
+    promoInteractiveItem = promo.querySelectorAll(".promo__interactive-item");
+
+promoAdv.forEach(item => {
+    item.remove();
+});
+// promoAdv.remove();
+
+promoGenre.innerText = "драма";
+
+promoBg.style.backgroundImage = " url('img/bg.jpg ') ";
+
+movieDB.movies.sort();
+
+for (let i = 0; i < promoInteractiveItem.length; i++){
+    promoInteractiveItem[i].innerText = `${i + 1} ` + movieDB.movies[i];
+}
