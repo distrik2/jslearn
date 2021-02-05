@@ -1,7 +1,7 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", () => {
-    
+
     const tabsparent = document.querySelector(".tabheader__items");
     const tabs = document.querySelectorAll(".tabheader__item");
     const tabscontent = document.querySelectorAll(".tabcontent");
@@ -41,13 +41,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    // timet
-    const deadline = "2021-02-05";
+    // timer
 
-    function getTimeRem(endtime){
-        const t = Date.parse(endtime) - Date.parse(new Date());
-        const days = Math.floor(t / (1000 * 60 * 60 * 24) );
-        const hours = Math.floor((t / (1000 * 60 * 60)) % 24);
+    const deadline = new Date(2022, 1, 1, 0);
+    // const deadline = "2022-01-01";
+
+    function getTimeRem(endtime) {
+        const t = endtime - Date.parse(new Date());
+        const days = Math.floor(t / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((t / (1000 * 60 * 60) % 24));
         const minutes = Math.floor((t / 1000 / 60) % 60);
         const seconds = Math.floor((t / 1000) % 60);
 
@@ -61,15 +63,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getZero(num) {
-        if (num >= 0 && num < 10){
+        if (num >= 0 && num < 10) {
             return `0${num}`;
         }
-        else{
+        else {
             return num;
         }
     }
 
-    function setClock(endtime){
+    function setClock(endtime) {
         const timer = document.querySelector(".timer");
         const days = timer.querySelector("#days");
         const hours = timer.querySelector("#hours");
@@ -79,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateClock();
 
-        function updateClock(){
+        function updateClock() {
             const t = getTimeRem(endtime);
 
             days.innerHTML = getZero(t.days);
@@ -87,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
             minutes.innerHTML = getZero(t.minutes);
             seconds.innerHTML = getZero(t.seconds);
 
-            if (t.t <= 0){
+            if (t.t <= 0) {
                 clearInterval(timeInterval);
             }
         }
