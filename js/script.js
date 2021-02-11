@@ -96,4 +96,37 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     setClock(deadline);
+
+
+    //modal window
+
+    const modalList = document.querySelectorAll("[data-modal]");
+    const modal = document.querySelector(".modal");
+    const modalClose = document.querySelector("[data-close]");
+
+    function close() {
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+    }
+
+    modalList.forEach(item => {
+        item.addEventListener("click", () => {
+            modal.style.display = "block";
+            document.body.style.overflow = "hidden";
+            
+            modalClose.addEventListener("click", close);
+        });
+    });
+
+    modal.addEventListener("click", (e)=> {
+        if (e.target === modal) {
+            close();
+        }
+    });
+
+    document.addEventListener("keydown", (e) =>{
+        if (e.code === "Escape" && modal.style.display === "block"){
+            close();
+        }
+    });
 });
