@@ -156,8 +156,8 @@ document.addEventListener("DOMContentLoaded", () => {
             this.title = title;
             this.descr = descr;
             this.price = price;
-            this.classes = classes;
             this.parent = document.querySelector(parentSelector);
+            this.classes = classes;
             this.transfer = 27;
             this.changeToUAH();
         }
