@@ -218,4 +218,58 @@ document.addEventListener("DOMContentLoaded", () => {
     ).render();
 
 
+    // Forms + AJAX/HTTP
+
+    const forms = document.querySelectorAll("form");
+
+    const message = {
+        loading: "Загрузка",
+        success: "Скоро мы с вами свяжемся",
+        failure: "Что-то пошло не так",
+
+    };
+
+    forms.forEach(i => {
+        postData(i);
+    });
+
+    function postData(form) {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement("div");
+            statusMessage.classList.add("status");
+            statusMessage.textContent = message.loading;
+            form.append(statusMessage);
+
+            const req = new XMLHttpRequest();
+            req.open("POST", "server.php");
+
+            req.setRequestHeader("Content-type", "application/json");
+            const formData = new FormData(form);
+
+            const obj = {};
+            formData.forEach(function(value, key) {
+                obj[key] = value;
+            });
+
+            const json = JSON.stringify(obj);
+
+            req.send(json);
+
+            req.addEventListener("load", () => {
+                if (req.status === 200) {
+                    console.log(req.response);
+                    statusMessage.textContent = message.success;
+                    form.reset();
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 2000);
+                }
+                else {
+                    statusMessage.textContent = message.failure;
+                }
+            });
+        });
+    }
 });
