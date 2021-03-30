@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // timer
 
-    const deadline = new Date(2022, 1, 1, 0);
+    const deadline = new Date(2021, 5, 16, 0);
     // const deadline = "2022-01-01";
 
     function getTimeRem(endtime) {
@@ -102,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const modalList = document.querySelectorAll("[data-modal]");
     const modal = document.querySelector(".modal");
-    const modalClose = document.querySelector("[data-close]");
 
     function closeModal() {
         modal.style.display = "none";
@@ -112,10 +111,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function openModal() {
         modal.style.display = "block";
         document.body.style.overflow = "hidden";
-        // clearInterval(modalTimerId);
+        clearInterval(modalTimerId);
     }
-
-    modalClose.addEventListener("click", closeModal);
 
     modalList.forEach(item => {
         item.addEventListener("click", () => {
@@ -124,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
+        if (e.target === modal || e.target.getAttribute("data-close") == "") {
             closeModal();
         }
     });
@@ -135,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 5000);
+    // const modalTimerId = setTimeout(openModal, 50000);
 
     function showModalByScroll() {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -147,7 +144,30 @@ document.addEventListener("DOMContentLoaded", () => {
     // window.addEventListener("scroll", showModalByScroll);
 
 
-    //menu. Class/constructor
+    //menu. Get
+
+    async function getResource(url) {
+        const res = await fetch(url);
+
+        if (!res.ok) {
+            throw new Error(`FUCK! Status:${res.status}`);
+        }
+
+        return await res.json();
+    }
+    getResource("http://localhost:3000/menu")
+        .then(data => {
+            data.forEach(({ img, altimg, title, descr, price }) => {
+                new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
+            });
+        });
+
+    // axios.get("http://localhost:3000/menu")
+    //     .then(data => {
+    //         data.data.forEach(({ img, altimg, title, descr, price }) => {
+    //             new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
+    //         });
+    //     });
 
     class MenuCard {
         constructor(src, alt, title, descr, price, parentSelector, ...classes) {
@@ -188,88 +208,186 @@ document.addEventListener("DOMContentLoaded", () => {
             this.parent.append(element);
         }
     }
-    new MenuCard(
-        "img/tabs/vegy.jpg", "vegy",
-        'Меню "Фитнес"',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        9,
-        ".menu .container",
-        "menu__item", "big"
-    ).render();
 
-    new MenuCard(
-        "img/tabs/post.jpg", "post",
-        'Меню "Постное"',
-        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        14,
-        ".menu .container",
-        "menu__item"
-
-    ).render();
-
-    new MenuCard(
-        "img/tabs/elite.jpg", "elite",
-        'Меню “Премиум”',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        21,
-        ".menu .container",
-        "menu__item"
-
-    ).render();
-
-
-    // Forms + AJAX/HTTP
-
-    const forms = document.querySelectorAll("form");
-
+    // Forms + fetch
+    const forms = document.querySelectorAll('form');
     const message = {
-        loading: "Загрузка",
+        loading: "img/spinner.svg",
         success: "Скоро мы с вами свяжемся",
         failure: "Что-то пошло не так",
 
     };
 
-    forms.forEach(i => {
-        postData(i);
+    forms.forEach(item => {
+        bindpostData(item);
     });
 
-    function postData(form) {
+    const postData = async (url, data) => {
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: data
+        });
+
+        return await res.json();
+    };
+
+    function bindpostData(form) {
         form.addEventListener("submit", (e) => {
             e.preventDefault();
 
-            const statusMessage = document.createElement("div");
-            statusMessage.classList.add("status");
-            statusMessage.textContent = message.loading;
-            form.append(statusMessage);
+            let statusMessage = document.createElement('img');
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+            form.insertAdjacentElement('afterend', statusMessage);
 
-            const req = new XMLHttpRequest();
-            req.open("POST", "server.php");
-
-            req.setRequestHeader("Content-type", "application/json");
             const formData = new FormData(form);
 
-            const obj = {};
-            formData.forEach(function(value, key) {
-                obj[key] = value;
-            });
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-            const json = JSON.stringify(obj);
-
-            req.send(json);
-
-            req.addEventListener("load", () => {
-                if (req.status === 200) {
-                    console.log(req.response);
-                    statusMessage.textContent = message.success;
+            postData("http://localhost:3000/requests", json)
+                .then(data => {
+                    console.log(data);
+                    showThanksModal(message.success);
+                    statusMessage.remove();
+                })
+                .catch(() => {
+                    showThanksModal(message.failure);
+                })
+                .finally(() => {
                     form.reset();
-                    setTimeout(() => {
-                        statusMessage.remove();
-                    }, 2000);
-                }
-                else {
-                    statusMessage.textContent = message.failure;
-                }
-            });
+                });
         });
     }
+
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        prevModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close>×</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+        document.querySelector('.modal').append(thanksModal);
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            closeModal();
+        }, 4000);
+    }
+
+
+
+    //slider
+
+
+    const slides = document.querySelectorAll(".offer__slide");
+    const next = document.querySelector(".offer__slider-next");
+    const prev = document.querySelector(".offer__slider-prev");
+    const currentSlide = document.querySelector("#current");
+    const totalSlide = document.querySelector("#total");
+    let index = 1;
+
+    function hideSlide() {
+        slides.forEach(item => {
+            item.classList.add("hide");
+            item.classList.remove("show", "fade");
+        });
+    }
+    function showSlide(i = 0) {
+        slides[i].classList.add("show", "fade");
+        slides[i].classList.remove("hide");
+    }
+
+    function currCount() {
+        if (slides.length < 10) {
+            currentSlide.textContent = `0${index}`;
+        } else {
+            currentSlide.textContent = index;
+        }
+    }
+
+    hideSlide();
+    showSlide();
+
+    if (slides.length < 10) {
+        totalSlide.textContent = `0${slides.length}`;
+    } else {
+        totalSlide.textContent = slides.length;
+    }
+
+    function renderSlide(n) {
+        if (n > slides.length) {
+            index = 1;
+        }
+        if (n < 1) {
+            index = slides.length;
+        }
+
+        hideSlide();
+        showSlide(index - 1);
+        currCount();
+    }
+
+    function plusSlides(n) {
+        renderSlide(index += n);
+    }
+
+    next.addEventListener("click", (e) => {
+        plusSlides(+1);
+    });
+
+    prev.addEventListener("click", (e) => {
+        plusSlides(-1);
+    });
+
+    // function test() {
+    //     if (slides.length < 10) {
+    //         currentSlide.textContent = `0${currentSlide.textContent}`;
+    //     } else {
+    //         currentSlide.textContent = currentSlide.textContent;
+    //     }
+    // }
+
+    // next.addEventListener("click", (e) => {
+    //     if (currentSlide.textContent < 4) {
+    //         currentSlide.textContent++;
+    //         hideSlide();
+    //         showSlide(currentSlide.textContent);
+    //         test();
+    //     }
+    //     else if (currentSlide.textContent == 4) {
+    //         currentSlide.textContent = 1;
+    //         hideSlide();
+    //         showSlide(currentSlide.textContent);
+    //         test();
+    //     }
+    // });
+
+    // prev.addEventListener("click", (e) => {
+    //     if (currentSlide.textContent > 1) {
+    //         currentSlide.textContent--;
+    //         hideSlide();
+    //         showSlide(currentSlide.textContent);
+    //         test();
+    //     }
+    //     else if (currentSlide.textContent == 1) {
+    //         currentSlide.textContent = 4;
+    //         hideSlide();
+    //         showSlide(currentSlide.textContent);
+    //         test();
+    //     }
+    // });
 });

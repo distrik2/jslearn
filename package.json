@@ -1,0 +1,22 @@
+{
+  "name": "educate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/distrik2/jslearn.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/distrik2/jslearn/issues"
+  },
+  "homepage": "https://github.com/distrik2/jslearn#readme",
+  "devDependencies": {
+    "json-server": "^0.16.3"
+  }
+}
