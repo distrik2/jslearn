@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function openModal() {
         modal.style.display = "block";
         document.body.style.overflow = "hidden";
-        clearInterval(modalTimerId);
+        // clearInterval(modalTimerId);
     }
 
     modalList.forEach(item => {
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // const modalTimerId = setTimeout(openModal, 50000);
+    const modalTimerId = setTimeout(openModal, 50000);
 
     function showModalByScroll() {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -146,28 +146,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //menu. Get
 
-    async function getResource(url) {
-        const res = await fetch(url);
+    // async function getResource(url) {
+    //     const res = await fetch(url);
 
-        if (!res.ok) {
-            throw new Error(`FUCK! Status:${res.status}`);
-        }
+    //     if (!res.ok) {
+    //         throw new Error(`FUCK! Status:${res.status}`);
+    //     }
 
-        return await res.json();
-    }
-    getResource("http://localhost:3000/menu")
-        .then(data => {
-            data.forEach(({ img, altimg, title, descr, price }) => {
-                new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
-            });
-        });
-
-    // axios.get("http://localhost:3000/menu")
+    //     return await res.json();
+    // }
+    // getResource("http://localhost:3000/menu")
     //     .then(data => {
-    //         data.data.forEach(({ img, altimg, title, descr, price }) => {
+    //         data.forEach(({ img, altimg, title, descr, price }) => {
     //             new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
     //         });
     //     });
+
+    axios.get("http://localhost:3000/menu")
+        .then(data => {
+            data.data.forEach(({ img, altimg, title, descr, price }) => {
+                new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
+            });
+        });
 
     class MenuCard {
         constructor(src, alt, title, descr, price, parentSelector, ...classes) {
@@ -292,8 +292,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     //slider
 
-
     const slides = document.querySelectorAll(".offer__slide");
+    const offerSlider = document.querySelector(".offer__slider");
     const next = document.querySelector(".offer__slider-next");
     const prev = document.querySelector(".offer__slider-prev");
     const currentSlide = document.querySelector("#current");
@@ -323,6 +323,64 @@ document.addEventListener("DOMContentLoaded", () => {
         item.style.width = width;
     });
 
+    offerSlider.style.position = "relative";
+
+    function dotsForeach() {
+        dots.forEach(dot => dot.style.opacity = ".5");
+        dots[index - 1].style.opacity = 1;
+    }
+
+    function checkCurSlides() {
+        if (slides.length < 10) {
+            currentSlide.textContent = `0${index}`;
+        } else {
+            currentSlide.textContent = index;
+        }
+    }
+
+    const indecators = document.createElement("ol");
+    const dots = [];
+    indecators.classList.add("carousel-indicators");
+    indecators.style.cssText = `
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 15;
+        display: flex;
+        justify-content: center;
+        margin-right: 15%;
+        margin-left: 15%;
+        list-style: none;
+    `;
+    offerSlider.append(indecators);
+
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.createElement("li");
+        dot.setAttribute("data-slide-to", i + 1);
+        dot.style.cssText = `
+            box-sizing: content-box;
+            flex: 0 1 auto;
+            width: 30px;
+            height: 6px;
+            margin-right: 3px;
+            margin-left: 3px;
+            cursor: pointer;
+            background-color: #fff;
+            background-clip: padding-box;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            opacity: .5;
+            transition: opacity .6s ease;
+        `;
+        if (i == 0) {
+            dot.style.opacity = 1;
+        }
+        indecators.append(dot);
+        dots.push(dot);
+    }
+
+
     next.addEventListener("click", (e) => {
         if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
             offset = 0;
@@ -336,11 +394,9 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             index++;
         }
-        if (slides.length < 10) {
-            currentSlide.textContent = `0${index}`;
-        } else {
-            currentSlide.textContent = index;
-        }
+
+        checkCurSlides();
+        dotsForeach();
     });
 
     prev.addEventListener("click", (e) => {
@@ -356,63 +412,130 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             index--;
         }
-        if (slides.length < 10) {
-            currentSlide.textContent = `0${index}`;
-        } else {
-            currentSlide.textContent = index;
-        }
+
+        checkCurSlides();
+        dotsForeach();
     });
 
-    // function hideSlide() {
-    //     slides.forEach(item => {
-    //         item.classList.add("hide");
-    //         item.classList.remove("show", "fade");
-    //     });
-    // }
-    // function showSlide(i = 0) {
-    //     slides[i].classList.add("show", "fade");
-    //     slides[i].classList.remove("hide");
-    // }
+    dots.forEach(dot => {
+        dot.addEventListener("click", (e) => {
+            const slideTo = e.target.getAttribute("data-slide-to");
+            index = slideTo;
+            offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+            slidesField.style.transform = `translateX(-${offset}px)`;
 
-    // function currCount() {
-    //     if (slides.length < 10) {
-    //         currentSlide.textContent = `0${index}`;
-    //     } else {
-    //         currentSlide.textContent = index;
-    //     }
-    // }
+            checkCurSlides();
+            dotsForeach();
+        });
+    });
 
-    // hideSlide();
-    // showSlide();
+    //calculator
 
-    // if (slides.length < 10) {
-    //     totalSlide.textContent = `0${slides.length}`;
-    // } else {
-    //     totalSlide.textContent = slides.length;
-    // }
+    const result = document.querySelector(".calculating__result span");
 
-    // function renderSlide(n) {
-    //     if (n > slides.length) {
-    //         index = 1;
-    //     }
-    //     if (n < 1) {
-    //         index = slides.length;
-    //     }
+    let sex, height, weight, age, ratio;
 
-    //     hideSlide();
-    //     showSlide(index - 1);
-    //     currCount();
-    // }
+    if (localStorage.getItem("sex")) {
+        sex = localStorage.getItem("sex");
+    } else {
+        sex = "female";
+        localStorage.setItem("sex", "female");
+    }
+    if (localStorage.getItem("ratio")) {
+        ratio = localStorage.getItem("ratio");
+    } else {
+        ratio = 1.375;
+        localStorage.setItem("ratio", 1.375);
+    }
 
-    // function plusSlides(n) {
-    //     renderSlide(index += n);
-    // }
+    function initLocalStorage(selector, activeClass) {
+        const elements = document.querySelectorAll(selector);
 
-    // next.addEventListener("click", (e) => {
-    //     plusSlides(+1);
-    // });
+        elements.forEach(i => {
+            i.classList.remove(activeClass);
+            if (i.getAttribute("id") === localStorage.getItem("sex")) {
+                i.classList.add(activeClass);
+            }
+            if (i.getAttribute("data-ratio") === localStorage.getItem("ratio")) {
+                i.classList.add(activeClass);
+            }
+        });
+    }
 
-    // prev.addEventListener("click", (e) => {
-    //     plusSlides(-1);
-    // });
+    initLocalStorage('#gender div', 'calculating__choose-item_active');
+    initLocalStorage('.calculating__choose_big div', 'calculating__choose-item_active');
+
+    function calcTotal() {
+        if (!sex || !height || !weight || !age || !ratio) {
+            result.textContent = "___";
+            return;
+        }
+
+        if (sex === 'female') {
+            result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+        } else {
+            result.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+        }
+    }
+
+    calcTotal();
+
+    function getStaticInfo(selector, activeClass) {
+        const elements = document.querySelectorAll(selector);
+
+        elements.forEach(i => {
+            i.addEventListener("click", (e) => {
+                if (e.target.getAttribute("data-ratio")) {
+                    ratio = +e.target.getAttribute("data-ratio");
+                    localStorage.setItem("ratio", +e.target.getAttribute("data-ratio"));
+                } else {
+                    sex = e.target.getAttribute("id");
+                    localStorage.setItem("sex", e.target.getAttribute("id"));
+                }
+
+                elements.forEach(elem => {
+                    elem.classList.remove(activeClass);
+                });
+
+                e.target.classList.add(activeClass);
+
+                calcTotal();
+            });
+        });
+    }
+
+    getStaticInfo('#gender div', 'calculating__choose-item_active');
+    getStaticInfo('.calculating__choose_big div', 'calculating__choose-item_active');
+
+    function getDynamicInformation(selector) {
+        const input = document.querySelector(selector);
+
+        input.addEventListener("input", (e) => {
+
+            if (input.value.match(/\D/g)) {
+                input.style.border = "1px solid red";
+            } else {
+                input.style.border = "none";
+            }
+
+            switch (input.getAttribute("id")) {
+                case "height":
+                    height = +input.value;
+                    break;
+                case "weight":
+                    weight = +input.value;
+                    break;
+                case "age":
+                    age = +input.value;
+                    break;
+            }
+            calcTotal();
+        });
+    }
+
+    getDynamicInformation("#height");
+    getDynamicInformation("#weight");
+    getDynamicInformation("#age");
+
+
 });
